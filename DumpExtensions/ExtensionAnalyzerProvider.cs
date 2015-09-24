@@ -4,8 +4,10 @@
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Windows;
 
     using Microsoft.VisualStudio.ExtensionManager;
     using Microsoft.VisualStudio.ExtensionsExplorer;
@@ -40,13 +42,65 @@
             }
         }
 
-        public object SmallIconDataTemplate { get; }
+        private object _smallIconDataTemplate;
 
-        public object MediumIconDataTemplate { get; }
+        public object SmallIconDataTemplate
+        {
+            get
+            {
+                if (_smallIconDataTemplate == null)
+                {
+                    _smallIconDataTemplate = GetTemplate("SmallIcon");
+                }
 
-        public object LargeIconDataTemplate { get; }
+                return _smallIconDataTemplate;
+            }
+        }
 
-        public object DetailViewDataTemplate { get; }
+        private static object _mediumIconDataTemplate;
+
+        public object MediumIconDataTemplate
+        {
+            get
+            {
+                if (_mediumIconDataTemplate == null)
+                {
+                    _mediumIconDataTemplate = GetTemplate("MediumIcon");
+                }
+
+                return _mediumIconDataTemplate;
+            }
+        }
+
+        private static object _largeIconDataTemplate;
+
+        public object LargeIconDataTemplate
+        {
+            get
+            {
+                if (_mediumIconDataTemplate == null)
+                {
+                    _mediumIconDataTemplate = GetTemplate("LargeIcon");
+                }
+
+                return _mediumIconDataTemplate;
+            }
+        }
+
+        private static object _detailViewDataTemplate;
+
+        public object DetailViewDataTemplate
+        {
+            get
+            {
+                if (_mediumIconDataTemplate == null)
+                {
+                    _mediumIconDataTemplate = GetTemplate("DetailView");
+                }
+
+                return _mediumIconDataTemplate;
+            }
+        }
 
         public object HeaderContent { get; }
 
@@ -124,6 +178,23 @@
 
                 return this._extensionManager;
             }
+        }
+
+        private static object GetTemplate(string key)
+        {
+            string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+            string resourcePath = string.Format("{0};component/Templates/Template.xaml", assemblyName);
+
+            var templateDictionary = new ResourceDictionary();
+            templateDictionary.Source = new Uri(resourcePath, UriKind.Relative);
+
+            if (!templateDictionary.Contains(key))
+            {
+                return null;
+            }
+
+            object item = templateDictionary[key];
+            return item;
         }
     }
 }
