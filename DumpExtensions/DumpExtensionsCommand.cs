@@ -120,6 +120,15 @@ namespace DumpExtensions
             {
                 outputPane.OutputStringThreadSafe(info);
             }
+
+            ToolWindowPane window = this.package.FindToolWindow(typeof(ExtensionDumpWindow), 0, true);
+            if ((null == window) || (null == window.Frame))
+            {
+                throw new NotSupportedException("Cannot create tool window");
+            }
+
+            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
     }
 }
