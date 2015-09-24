@@ -54,7 +54,17 @@
 
                 try
                 {
-                    bitmap = new BitmapImage(new Uri(path));
+                    using (var stream = File.OpenRead(path))
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.StreamSource = stream;
+                        image.EndInit();
+
+                        bitmap = image;
+                        bitmap.Freeze();
+                    }
                 }
                 catch
                 {
